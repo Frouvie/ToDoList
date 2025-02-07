@@ -1,60 +1,5 @@
 import sys
-import sqlite3
-
-conn = sqlite3.connect('my_db.db')
-cursor = conn.cursor()
-
-def create_table() -> None:
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS tasks_list (
-            id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-            title VARCHAR(128) NOT NULL,
-            priority INTEGER NOT NULL
-        )
-    ''')
-
-    conn.commit()
-
-def insert(title: str, priority: int) -> None:
-    cursor.execute('''
-        INSERT INTO tasks_list (title, priority) VALUES (?, ?)
-    ''', (title, priority))
-
-    conn.commit()
-
-def update(id: int, title: str, priority: int) -> None:
-    cursor.execute('''
-        UPDATE tasks_list SET
-        title = ?, priority = ?
-        WHERE id = ?
-    ''', (title, priority, id))
-
-    conn.commit()
-
-def delete(id: int) -> None:
-    cursor.execute('''
-        DELETE FROM tasks_list
-        WHERE id = ?
-    ''', (id,))
-
-    conn.commit()
-
-def select(id: int):
-    cursor.execute('''
-        SELECT * FROM tasks_list
-        WHERE id = ?
-    ''', (id,))
-
-    return cursor.fetchone()
-
-
-def select_all() -> list:
-    cursor.execute('''
-        SELECT * FROM tasks_list
-        ORDER BY priority DESC
-    ''')
-    
-    return cursor.fetchall()
+import db
 
 
 def menu() -> None:
@@ -69,7 +14,7 @@ def menu() -> None:
 
 def main():
     try:
-        create_table()
+        db.create_table()
     except Exception as error:
         print(f'Error : {error}')
         sys.exit()
@@ -82,7 +27,7 @@ def main():
         match responce:
             case 1:
                 try:
-                    tasks = select_all()
+                    tasks = db.select_all()
                 except Exception as error:
                     print(f'Error: {error}')
                     break
@@ -93,7 +38,7 @@ def main():
                 id = int(input('Enter id: '))
                 
                 try:
-                    task = select(id)
+                    task = db.select(id)
                     print(task)
                 except Exception as error:
                     print(f'Error: {error}')
@@ -103,7 +48,7 @@ def main():
                 priority = int(input("Enter priority: "))
 
                 try:
-                    task = insert(title, priority)
+                    task = db.insert(title, priority)
                 except Exception as error:
                     print(f'Error: {error}')
                     break
@@ -113,7 +58,7 @@ def main():
                 priority = int(input("Enter priority: "))
 
                 try:
-                    task = update(id, title, priority)
+                    task = db.update(id, title, priority)
                 except Exception as error:
                     print(f'Error: {error}')
                     break
@@ -121,7 +66,7 @@ def main():
                 id = int(input('Enter id: '))
 
                 try:
-                    task = delete(id)
+                    task = db.delete(id)
                 except Exception as error:
                     print(f'Error: {error}')
                     break
