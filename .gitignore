@@ -169,5 +169,7 @@ cython_debug/
 
 myenv/
 
+*.db
+
 # PyPI configuration file
 .pypirc
